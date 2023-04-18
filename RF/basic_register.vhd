@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    16:19:16 04/17/2023 
+-- Create Date:    15:59:20 04/17/2023 
 -- Design Name: 
--- Module Name:    compare_module - Behavioral 
+-- Module Name:    basic_register - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -29,17 +29,32 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity compare_module is
-    Port ( cmp_0 : in  STD_LOGIC_VECTOR (4 downto 0);
-           cmp_1 : in  STD_LOGIC_VECTOR (4 downto 0);
-           result : out  STD_LOGIC_VECTOR (4 downto 0));
-end compare_module;
+entity basic_register is
+    Port ( R_in : in  STD_LOGIC_VECTOR (31 downto 0);
+           WE : in  STD_LOGIC;
+           CLK : in  STD_LOGIC;
+			  Reset : in STD_LOGIC;
+           R_out : out  STD_LOGIC_VECTOR (31 downto 0) := b"0000_0000_0000_0000_0000_0000_0000_0000"
+			  );
+end basic_register;
 
-architecture Behavioral of compare_module is
-
+architecture Behavioral of basic_register is
+	
 begin
-	result <= cmp_0 when cmp_0 = cmp_1 else
-				 cmp_1;
+
+
+	process(CLK, WE, R_in, Reset)
+	begin
+		if rising_edge(CLK) then
+			if Reset = '1' then
+				R_out <= b"0000_0000_0000_0000_0000_0000_0000_0000";
+			else 
+				if WE = '1' then
+					R_out <= R_in;
+				end if;
+			end if;			
+		end if;
+	end process;
 
 end Behavioral;
 
