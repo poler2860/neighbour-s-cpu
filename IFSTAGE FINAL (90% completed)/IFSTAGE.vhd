@@ -45,13 +45,10 @@ signal mux2to1_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
 signal Adder_4_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
 signal register_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
 signal Adder_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
-	
-	--IMEM component.
-	component ROM1024 is
-		Port(ADDRA: in STD_LOGIC_VECTOR (31 DOWNTO 0);
-		--	ENA: in STD_LOGIC;
-		--	CLKA: in STD_LOGIC;
-			DOUTA: out STD_LOGIC_VECTOR (31 DOWNTO 0));
+		
+	component NEWROM is
+		Port(a: in STD_LOGIC_VECTOR (9 DOWNTO 0);
+				spo: out STD_LOGIC_VECTOR (31 DOWNTO 0));
 	end component;
 	
 	--multiplexer to choose between PC+4 or PC+4+Imm.
@@ -85,24 +82,27 @@ signal Adder_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
 	end component;
 	
 begin
-	IMEM: ROM1024 PORT MAP(ADDRA => register_out,
-									DOUTA => Instr);
+	IMEM2: NEWROM PORT MAP(a=> register_out,
+				spo => Instr);
+	
 	
 	MUX: mux2to1 PORT MAP( DataIn_Imm => Adder_out,
-								DataIn_4 => Adder_4_out,
-								Sel => PC_Sel , 
-								Data_Out=> mux2to1_out);
+				DataIn_4 => Adder_4_out,
+				Sel => PC_Sel , 
+				Data_Out=> mux2to1_out);
 	
 	Adder4 : Adder_4 PORT MAP(DataIn => register_out,
-									DataOut => Adder_4_out);
+					DataOut => Adder_4_out);
 									
 	Adder_PCImned: Adder PORT MAP(DataIn_4=> Adder_4_out,
-								DataIn_PCImmed=> Adder_out,
-								Data_Out=> Adder_out);	
+					DataIn_PCImmed=> Adder_out,
+					Data_Out=> Adder_out);	
 								
 	PC_REGISTER: basic_register PORT MAP(CLK=>Clk,
-													WE=> PC_LdEn,
-													R_in =>  mux2to1_out,
-													Reset => Rst,
-													R_out => register_out);
+						WE=> PC_LdEn,
+						R_in =>  mux2to1_out,
+						Reset => Rst,
+						R_out => register_out);
 end Stractural;
+
+
